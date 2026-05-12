@@ -2,20 +2,63 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe, STRIPE_PRICES } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import crypto from 'crypto'
+
+const SESSION_COOKIE_NAME = 'session'
+const SESSION_SECRET = process.env.SESSION_SECRET
+
+if (!SESSION_SECRET) {
+  throw new Error('SESSION_SECRET environment variable is required')
+}
+
+/**
+ * Verify a session token and return userId
+ */
+function verifySessionToken(token: string): string | null {
+  try {
+    const decoded = Buffer.from(token, 'base64').toString()
+    const [userId, signature] = decoded.split(':')
+    const payload = userId
+    const expectedSignature = crypto
+      .createHmac('sha256', SESSION_SECRET)
+      .update(payload)
+      .digest('hex')
+    if (signature === expectedSignature) {
+      return userId
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Get authenticated user from session cookie
+ */
+function getAuthenticatedUser(request: NextRequest): string | null {
+  const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value
+  if (!sessionToken) return null
+  return verifySessionToken(sessionToken)
+}
 
 const checkoutSchema = z.object({
   tier: z.enum(['pro', 'agency']),
-  userId: z.string(),
 })
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { tier, userId } = checkoutSchema.parse(body)
+    // Authenticate user via session cookie
+    const authenticatedUserId = getAuthenticatedUser(request)
+    if (!authenticatedUserId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-    // Validate user exists
+    const body = await request.json()
+    const { tier } = checkoutSchema.parse(body)
+
+    // Validate user exists and matches authenticated user
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: authenticatedUserId },
     })
 
     if (!user) {
@@ -43,7 +86,7 @@ export async function POST(request: NextRequest) {
       success_url: `${baseUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/pricing?canceled=true`,
       metadata: {
-        userId,
+        userId: authenticatedUserId,
         tier,
       },
     })

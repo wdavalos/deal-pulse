@@ -50,3 +50,8 @@ model MagicLink {
   usedAt    DateTime?
   createdAt DateTime @default(now())
 }
+
+model WebhookEvent {
+  id        String   @id
+  createdAt DateTime @default(now())
+}
