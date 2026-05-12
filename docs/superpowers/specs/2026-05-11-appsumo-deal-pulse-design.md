@@ -66,7 +66,8 @@
 
 - **[frontend-design](https://claude.com/plugins/frontend-design)** — UI components and pages
 - **[vercel](https://claude.com/plugins/vercel)** — deployment and serverless functions
-- **[stripe](https://claude.com/plugins/stripe)** — subscription billing (LemonSqueezy replaced)
+- **[stripe](https://claude.com/plugins/stripe)** — subscription billing
+- **[prisma](https://claude.com/plugins/prisma)** — database ORM and migrations (future use)
 
 ### Data Model
 
