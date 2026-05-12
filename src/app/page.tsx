@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 export default function HomePage() {
+  console.log('PAGE LOADED - full version')
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Header */}
