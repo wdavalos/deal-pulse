@@ -1,18 +1,21 @@
 # AppSumo Deal Pulse — Implementation Complete
 
 **Date:** 2026-05-11
-**Status:** MVP Complete, 27 tests passing, build successful
+**Last Updated:** 2026-05-12
+**Status:** Live at https://dealpulse.space
 
 ## What Was Built
 
 AppSumo Deal Pulse is an alert system that monitors AppSumo deal activity and notifies SaaS founders when their deals go live, fill tiers, or expire.
 
 ### Architecture
-- **Stack:** Next.js 14 App Router, Prisma + SQLite, TypeScript, Stripe, Resend, Vercel
+- **Stack:** Next.js 14 App Router, Prisma + PostgreSQL, TypeScript, Stripe, Resend, Vercel
+- **Database:** Vercel Postgres (Prisma with PostgreSQL)
 - **Auth:** Magic link with rate limiting
-- **Payments:** Stripe subscriptions (Free/Pro/Agency tiers)
-- **Monitoring:** RSS parsing + PartnerStack API + Vercel cron (every 15 min)
+- **Payments:** Stripe subscriptions (Free/Pro/Agency tiers — $49/mo Pro, $99/mo Agency)
+- **Monitoring:** RSS parsing + PartnerStack API + Vercel cron (daily on Hobby)
 - **Alerts:** Discord webhooks with comprehensive error handling
+- **Domain:** dealpulse.space (purchased via Vercel)
 
 ## Files Created
 
@@ -77,26 +80,39 @@ appsumo-deal-pulse/
 | 781bffb | feat: add AppSumo RSS parser |
 | d584e10 | feat: initial project setup with Next.js 14, Prisma, and test infrastructure |
 
-## Environment Variables Needed
+## Environment Variables
 
 ```bash
-DATABASE_URL="file:./dev.db"
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-STRIPE_PRO_PRICE_ID="price_..."
-STRIPE_AGENCY_PRICE_ID="price_..."
-RESEND_API_KEY="re_..."
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-CRON_SECRET="your-cron-secret"
-SESSION_SECRET="your-session-secret"
+DATABASE_URL="postgres://..."         # Vercel Postgres
+STRIPE_SECRET_KEY="sk_live_..."       # Live Stripe key
+STRIPE_PRO_PRICE_ID="price_..."       # $49/mo Pro tier
+STRIPE_AGENCY_PRICE_ID="price_..."    # $99/mo Agency tier
+STRIPE_WEBHOOK_SECRET="whsec_..."     # Stripe webhook signing secret
+RESEND_API_KEY="re_..."               # Email (Resend)
+NEXT_PUBLIC_APP_URL="https://dealpulse.space"
+CRON_SECRET="..."                      # Cron endpoint security
+SESSION_SECRET="..."                  # Session signing
 ```
 
 ## Deployment Steps
 
-1. Push to GitHub: `git remote add origin <url> && git push -u origin master`
-2. Create Stripe products/prices in Stripe dashboard
-3. Set environment variables in Vercel
-4. Deploy — cron jobs will activate automatically via vercel.json
+1. Push to GitHub: `git push origin master`
+2. Create Vercel Postgres database (Storage tab)
+3. Run `npx prisma db push` to sync schema
+4. Create Stripe products/prices (via Stripe CLI or dashboard)
+5. Set environment variables in Vercel dashboard
+6. Deploy — cron jobs run daily on Hobby plan
+
+## Recent Commits
+
+| Hash | Message |
+|------|---------|
+| dd5a972 | fix: stripe.ts export singleton instance not object |
+| 8f04d26 | fix: cron to daily for hobby plan |
+| bc53a64 | fix: switch to postgresql for production |
+| 118f70c | fix: lazy env init, prisma generate in build |
+| a75a928 | docs: add completion documentation |
+| 62bc080 | feat: complete AppSumo Deal Pulse MVP |
 
 ## Test Results
 
