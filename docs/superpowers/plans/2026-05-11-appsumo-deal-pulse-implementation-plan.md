@@ -35,7 +35,8 @@ appsumo-deal-pulse/
 │   │   ├── partnerstack.ts       # PartnerStack API client
 │   │   ├── discord.ts            # Discord webhook sender
 │   │   ├── stripe.ts             # Stripe helpers
-│   │   └── auth.ts               # Auth utilities
+│   │   ├── auth.ts               # Auth utilities
+│   │   └── email.ts               # Resend email client
 │   └── components/
 │       ├── DealCard.tsx
 │       ├── EventLog.tsx
@@ -83,7 +84,8 @@ appsumo-deal-pulse/
     "stripe": "15.0.0",
     "resend": "3.3.0",
     "rss-parser": "3.13.0",
-    "zod": "3.23.0"
+    "zod": "3.23.0",
+    "lucide-react": "0.378.0"
   },
   "devDependencies": {
     "@types/node": "20.12.0",
@@ -202,6 +204,31 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+```
+
+- [ ] **Step 5b: Create src/lib/email.ts**
+
+```typescript
+import { Resend } from 'resend'
+
+export const resend = new Resend(process.env.RESEND_API_KEY)
+```
+
+- [ ] **Step 5c: Create jest.config.js**
+
+```javascript
+const nextJest = require('next/jest')
+
+const createJestConfig = nextJest({
+  dir: './',
+})
+
+module.exports = createJestConfig({
+  testEnvironment: 'node',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+})
 ```
 
 - [ ] **Step 6: Install dependencies**
