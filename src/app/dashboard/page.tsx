@@ -48,28 +48,53 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-gray-400 text-lg">Loading...</div>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: 'var(--earth-bg)' }}
+      >
+        <div className="text-lg" style={{ color: 'var(--earth-muted)' }}>
+          Loading...
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 py-12 px-4">
+    <div
+      className="min-h-screen py-12 px-4"
+      style={{ backgroundColor: 'var(--earth-bg)' }}
+    >
       <div className="max-w-6xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Dashboard</h1>
+        <h1
+          className="text-3xl font-bold mb-8"
+          style={{ fontFamily: '"Space Mono", monospace', color: 'var(--earth-text)' }}
+        >
+          Dashboard
+        </h1>
 
         {/* Deals Section */}
         <section>
-          <h2 className="text-xl font-semibold text-gray-200 mb-4">Your Deals</h2>
+          <h2
+            className="text-xl font-semibold mb-4"
+            style={{ fontFamily: '"Space Mono", monospace', color: 'var(--earth-subtle)' }}
+          >
+            Your Deals
+          </h2>
           {error && (
-            <div className="bg-red-900/30 border border-red-800 text-red-400 rounded-lg p-4 mb-4">
+            <div
+              className="rounded-lg p-4 mb-4"
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#f87171',
+              }}
+            >
               {error}
             </div>
           )}
 
           {deals.length === 0 && !error ? (
-            <p className="text-gray-500">No deals configured yet.</p>
+            <p style={{ color: 'var(--earth-muted)' }}>No deals configured yet.</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {deals.map((deal) => (
@@ -86,7 +111,12 @@ export default function DashboardPage() {
 
         {/* Events Section */}
         <section>
-          <h2 className="text-xl font-semibold text-gray-200 mb-4">Event Log</h2>
+          <h2
+            className="text-xl font-semibold mb-4"
+            style={{ fontFamily: '"Space Mono", monospace', color: 'var(--earth-subtle)' }}
+          >
+            Event Log
+          </h2>
           <EventLog events={events} />
         </section>
       </div>
