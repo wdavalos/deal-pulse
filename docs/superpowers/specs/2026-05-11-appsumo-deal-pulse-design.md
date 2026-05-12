@@ -57,10 +57,16 @@
 | Frontend | Next.js (App Router) | Fast to build, good DX |
 | Backend | Next.js API routes | Serverless, no separate server |
 | Database | SQLite (via Prisma) | Zero cost, simple |
-| Hosting | Vercel | Free tier, easy deploy |
-| Payments | LemonSqueezy | SaaS-friendly, free tier |
+| Hosting | Vercel | Free tier, easy deploy — use [vercel](https://claude.com/plugins/vercel) plugin |
+| Payments | Stripe | Use [stripe](https://claude.com/plugins/stripe) plugin for billing |
 | Email | Resend | Free tier, simple API |
 | Monitoring | Cron job via Vercel cron | Free |
+
+### Plugins Used
+
+- **[frontend-design](https://claude.com/plugins/frontend-design)** — UI components and pages
+- **[vercel](https://claude.com/plugins/vercel)** — deployment and serverless functions
+- **[stripe](https://claude.com/plugins/stripe)** — subscription billing (LemonSqueezy replaced)
 
 ### Data Model
 
@@ -111,7 +117,7 @@ The `frontend-design` skill creates distinctive, production-grade interfaces tha
 | 1-2 | Project setup, AppSumo RSS parsing, PartnerStack API |
 | 3 | Alert system (Discord webhooks) |
 | 4 | Dashboard + auth |
-| 5 | Payments (LemonSqueezy) + landing page |
+| 5 | Payments (Stripe) + landing page |
 | 6-7 | First beta users, iterate |
 
 ---
