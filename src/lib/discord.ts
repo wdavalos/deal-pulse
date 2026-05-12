@@ -57,10 +57,29 @@ export function buildDiscordPayload(alert: DiscordAlert): DiscordWebhookPayload 
   };
 }
 
+export interface DiscordAlertResult {
+  success: boolean;
+  error?: string;
+  statusCode?: number;
+}
+
 export async function sendDiscordAlert(
   webhookUrl: string,
   alert: DiscordAlert
-): Promise<boolean> {
+): Promise<DiscordAlertResult> {
+  if (!webhookUrl || typeof webhookUrl !== 'string' || webhookUrl.trim().length === 0) {
+    return { success: false, error: 'Invalid webhookUrl: must be a non-empty string' };
+  }
+
+  try {
+    const url = new URL(webhookUrl);
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      return { success: false, error: 'Invalid webhookUrl: must use http or https protocol' };
+    }
+  } catch {
+    return { success: false, error: 'Invalid webhookUrl: must be a valid URL' };
+  }
+
   try {
     const payload = buildDiscordPayload(alert);
     const response = await fetch(webhookUrl, {
@@ -70,9 +89,18 @@ export async function sendDiscordAlert(
       },
       body: JSON.stringify(payload),
     });
-    return response.ok;
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: `Discord API error: ${response.status} ${response.statusText}`,
+        statusCode: response.status,
+      };
+    }
+
+    return { success: true };
   } catch (error) {
-    console.error('Failed to send Discord alert:', error);
-    return false;
+    const message = error instanceof Error ? error.message : String(error);
+    return { success: false, error: `Network failure: ${message}` };
   }
 }
