@@ -16,7 +16,8 @@ export function DealCard({ appsumoUrl, status, lastChecked }: DealCardProps) {
           href={appsumoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-400 hover:text-blue-300 hover:underline text-sm font-medium flex items-center gap-1"
+          className="text-blue-400 hover:text-blue-300 hover:underline text-sm font-medium flex items-center gap-1 truncate"
+          title={appsumoUrl}
         >
           {appsumoUrl}
           <ExternalLink size={14} />

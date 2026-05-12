@@ -22,6 +22,7 @@ export default function DashboardPage() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -31,9 +32,12 @@ export default function DashboardPage() {
           const data = await response.json();
           setDeals(data.deals || []);
           setEvents(data.events || []);
+        } else {
+          setError(`Failed to load deals (status: ${response.status})`);
         }
       } catch (error) {
         console.error('Failed to fetch deals:', error);
+        setError('Failed to connect to server. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -58,7 +62,13 @@ export default function DashboardPage() {
         {/* Deals Section */}
         <section>
           <h2 className="text-xl font-semibold text-gray-200 mb-4">Your Deals</h2>
-          {deals.length === 0 ? (
+          {error && (
+            <div className="bg-red-900/30 border border-red-800 text-red-400 rounded-lg p-4 mb-4">
+              {error}
+            </div>
+          )}
+
+          {deals.length === 0 && !error ? (
             <p className="text-gray-500">No deals configured yet.</p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
