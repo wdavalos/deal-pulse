@@ -3,13 +3,17 @@ import { verifyMagicLink } from '@/lib/auth'
 import crypto from 'crypto'
 
 const SESSION_COOKIE_NAME = 'session'
-const SESSION_SECRET = process.env.SESSION_SECRET || 'default-secret-change-me'
+const SESSION_SECRET = process.env.SESSION_SECRET
+
+if (!SESSION_SECRET) {
+  throw new Error('SESSION_SECRET environment variable is required')
+}
 
 /**
  * Create a session token for a user
  */
 function createSessionToken(userId: string): string {
-  const payload = `${userId}:${Date.now()}`
+  const payload = userId
   const signature = crypto
     .createHmac('sha256', SESSION_SECRET)
     .update(payload)
@@ -23,8 +27,8 @@ function createSessionToken(userId: string): string {
 function verifySessionToken(token: string): string | null {
   try {
     const decoded = Buffer.from(token, 'base64').toString()
-    const [userId, timestamp, signature] = decoded.split(':')
-    const payload = `${userId}:${timestamp}`
+    const [userId, signature] = decoded.split(':')
+    const payload = userId
     const expectedSignature = crypto
       .createHmac('sha256', SESSION_SECRET)
       .update(payload)
