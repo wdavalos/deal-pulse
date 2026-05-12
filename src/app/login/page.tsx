@@ -100,7 +100,6 @@ export default function LoginPage() {
                     backgroundColor: '#111111',
                     border: '1px solid #222222',
                     color: '#ffffff',
-                    '--tw-ring-color': '#b45309',
                   }}
                   placeholder="you@example.com"
                   disabled={status === 'loading'}
