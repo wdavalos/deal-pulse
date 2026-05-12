@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --earth-bg: #0a0a0f;
+    --earth-surface: #111111;
+    --earth-border: #222222;
+    --earth-hover: #333333;
+    --earth-primary: #b45309;
+    --earth-primary-hover: #92400e;
+    --earth-text: #ffffff;
+    --earth-subtle: #888888;
+    --earth-muted: #666666;
+  }
+
+  html {
+    background-color: var(--earth-bg);
+    font-family: system-ui, sans-serif;
+  }
+}
