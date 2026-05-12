@@ -1,8 +1,20 @@
 # AppSumo Deal Pulse — Project Handoff
 
-**Status:** Live at https://dealpulse.space
+**Status:** Live at https://dealpulse.space — Visual redesign deployed
 **Last Updated:** 2026-05-12
 **Repository:** https://github.com/wdavalos/deal-pulse
+
+---
+
+## What Is Deal Pulse
+
+Alert system that monitors AppSumo deal activity and notifies SaaS founders when their deals go live, fill tiers, or expire.
+
+**Target:** Bootstrapped SaaS founders running their own AppSumo deals. Solo operators, not agencies (Agency tier removed until team features exist).
+
+**Pricing:**
+- Free: 1 deal, email alerts only
+- Pro: $49/mo, unlimited deals, Discord + email alerts
 
 ---
 
@@ -12,12 +24,10 @@
 cd /home/thinkpad/Projects/ai-micro-saas-portfolio/appsumo-deal-pulse
 npm install
 npm run dev       # Local development
-npm run build     # Production build (includes prisma generate)
+npm run build     # Production build
 npm run start     # Start production server
 npm test          # Run tests
 ```
-
-**Note:** The app uses `src/app/` for Next.js pages (not a root `app/` directory). Keep the `src/` directory structure intact.
 
 ---
 
@@ -36,22 +46,38 @@ npm test          # Run tests
 
 ---
 
-## Environment Variables
+## Visual Design
 
-Copy `.env.example` to `.env` and fill in values:
+| Element | Value |
+|---------|-------|
+| Aesthetic | Indie hacker — warm, approachable |
+| Background | `#0a0a0f` (deep charcoal) |
+| Surface | `#111111` |
+| Border | `#222222` |
+| Primary accent | `#b45309` (muted earth amber) |
+| Primary hover | `#92400e` |
+| Text primary | `#ffffff` |
+| Text secondary | `#888888` |
+| Text muted | `#666666` |
+| Heading font | Space Mono (Google Fonts) |
+| Body font | System UI |
+
+**Landing page:** Single-screen focused — hero above fold, no scroll required. No features grid, no how-it-works sections.
+
+---
+
+## Environment Variables
 
 ```bash
 cp .env.example .env
+# Fill in values below
 ```
-
-### Required Variables
 
 | Variable | Description | Where to Get |
 |----------|-------------|--------------|
 | `DATABASE_URL` | PostgreSQL connection string | Vercel Postgres (Storage tab) |
 | `STRIPE_SECRET_KEY` | Stripe live secret key | Stripe Dashboard → Developers → API keys |
 | `STRIPE_PRO_PRICE_ID` | Pro tier price ID | Stripe Dashboard → Products → price_xxx |
-| `STRIPE_AGENCY_PRICE_ID` | Agency tier price ID | Stripe Dashboard → Products → price_xxx |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | Stripe Dashboard → Webhooks |
 | `RESEND_API_KEY` | Resend email API key | Resend.com → API Keys |
 | `SESSION_SECRET` | Session signing secret | Generate: `openssl rand -hex 16` |
@@ -61,14 +87,10 @@ cp .env.example .env
 ### Vercel Environment Setup
 
 ```bash
-# Link project
 vercel link
-
-# Add env vars to Vercel
 vercel env add DATABASE_URL production
 vercel env add STRIPE_SECRET_KEY production
 vercel env add STRIPE_PRO_PRICE_ID production
-vercel env add STRIPE_AGENCY_PRICE_ID production
 vercel env add STRIPE_WEBHOOK_SECRET production
 vercel env add RESEND_API_KEY production
 vercel env add SESSION_SECRET production
@@ -81,36 +103,24 @@ vercel env add NEXT_PUBLIC_APP_URL production
 ## Database
 
 ```bash
-# Push schema to database
-npx prisma db push
-
-# Generate Prisma client (required before build)
-npx prisma generate
-
-# Open Prisma Studio
-npx prisma studio
+npx prisma db push       # Push schema to database
+npx prisma generate      # Generate Prisma client (run before build)
+npx prisma studio        # Open database GUI
 ```
 
 ---
 
 ## Stripe Setup
 
-### Create Products via Stripe CLI
+**Note:** Agency tier is removed from the UI. Only Free and Pro tiers exist in the product.
 
 ```bash
 # Create Pro product
 stripe products create --name="AppSumo Deal Pulse Pro"
 
-# Create Agency product
-stripe products create --name="AppSumo Deal Pulse Agency"
-
-# Create recurring prices ($49/mo Pro, $99/mo Agency)
+# Create recurring price ($49/mo)
 stripe prices create -d "product=prod_XXX" -d "unit_amount=4900" -d "currency=usd" -d "billing_scheme=per_unit" -d "nickname=Pro Monthly" -d "recurring[interval]=month"
 ```
-
-### Price IDs (Current)
-- **Pro:** `price_1TWJmBDlXhiWIiRT64Kce3Sa` ($49/mo)
-- **Agency:** `price_1TWJmKDlXhiWIiRTgtMK4jLy` ($99/mo)
 
 ---
 
@@ -118,76 +128,94 @@ stripe prices create -d "product=prod_XXX" -d "unit_amount=4900" -d "currency=us
 
 | File | Purpose |
 |------|---------|
-| `src/app/page.tsx` | Landing page |
+| `src/app/page.tsx` | Landing page (indie hacker redesign) |
+| `src/app/layout.tsx` | Root layout (Space Mono font, earth bg) |
+| `src/app/globals.css` | CSS variables for earth palette |
 | `src/app/login/page.tsx` | Magic link login |
 | `src/app/dashboard/page.tsx` | User dashboard |
 | `src/app/api/auth/route.ts` | Send magic link |
-| `src/app/api/auth/verify/route.ts` | Verify token |
+| `src/app/api/auth/verify/route.ts` | Verify token + session |
 | `src/app/api/cron/route.ts` | Deal monitoring cron |
-| `src/app/api/stripe/checkout/route.ts` | Stripe checkout |
-| `src/app/api/stripe/webhook/route.ts` | Stripe webhooks |
+| `src/app/api/stripe/checkout/route.ts` | Stripe checkout session |
+| `src/app/api/stripe/webhook/route.ts` | Stripe webhook handler |
+| `src/components/PricingTable.tsx` | Free/Pro pricing only |
+| `src/components/DealCard.tsx` | Deal card with amber border |
+| `src/components/EventLog.tsx` | Event log with earth palette |
 | `src/lib/stripe.ts` | Stripe singleton |
 | `src/lib/auth.ts` | Magic link utilities |
 | `src/lib/appsumo.ts` | AppSumo RSS parser |
 | `src/lib/partnerstack.ts` | PartnerStack API |
 | `src/lib/discord.ts` | Discord webhooks |
 | `prisma/schema.prisma` | Database schema |
+| `tailwind.config.js` | Earth palette + Space Mono |
 | `vercel.json` | Cron schedule |
 
 ---
 
 ## Cron Job
 
-Currently set to **daily** (Hobby plan limit):
+Daily on Hobby plan:
 
 ```json
 // vercel.json
-{
-  "crons": [
-    {
-      "path": "/api/cron",
-      "schedule": "0 0 * * *"
-    }
-  ]
-}
+{ "crons": [{ "path": "/api/cron", "schedule": "0 0 * * *" }] }
 ```
 
-To change frequency, upgrade to Vercel Pro plan.
+Upgrade to Vercel Pro for more frequent checks.
 
 ---
 
 ## Known Issues
 
-1. **Tailwind CSS not rendering** — Caused by an empty `app/` directory at the project root shadowing `src/app/`. If styles break again, verify no `app/` directory exists at root level (`ls -la /` in project root).
-2. **Hobby plan cron limit** — Cron runs daily max. Upgrade to Vercel Pro for more frequent checks.
-3. **Resend API key** — `RESEND_API_KEY` must be set in `.env` for the build to succeed. The email client uses lazy initialization to avoid build-time errors.
+1. **Hobby plan cron limit** — Once/day max. Upgrade to Pro for more frequent checks.
+2. **Agency tier removed from UI** — Data model still supports it, but pricing table only shows Free/Pro. Don't mention Agency in Stripe dashboard either — it will confuse users.
+3. **Space Mono via Google Fonts** — Requires internet connection on first load. Fallback is system monospace.
+
+---
+
+## Testing Checklist (Next Phase)
+
+- [ ] Sign up flow — magic link sent to email
+- [ ] Verify magic link login works
+- [ ] Add a deal URL to monitor
+- [ ] Confirm deal appears in dashboard
+- [ ] Trigger a mock event (edit deal status manually in DB)
+- [ ] Verify Discord webhook fires on event
+- [ ] Upgrade to Pro via Stripe checkout
+- [ ] Verify Pro features unlocked after payment
+- [ ] Verify Free tier limits enforced (1 deal only)
+- [ ] Mobile layout — single-screen landing still readable
+- [ ] Login page theming consistent with landing
+- [ ] Dashboard event log displays correctly
+- [ ] DealCard amber border visible on active deals
 
 ---
 
 ## Troubleshooting
 
 ```bash
-# If styles aren't loading, check for shadowing app/ directory
-ls -la /path/to/project/ | grep "^d.*app"
-
-# Rebuild locally
+# Rebuild cleanly
 rm -rf .next && npm run build
 
-# Check Vercel deployment
-vercel ls
-vercel inspect <deployment-url>
+# Force production deploy
+vercel deploy --prod --force
 
-# View Vercel logs
+# Check deployment status
+vercel ls
+
+# View logs
 vercel logs dealpulse.space
 
-# Force a clean production deploy
-vercel deploy --prod --force
+# Inspect deployment
+vercel inspect <url>
 ```
 
 ---
 
 ## Documentation
 
-- [SPEC](./docs/superpowers/specs/2026-05-11-appsumo-deal-pulse-design.md)
-- [Implementation Plan](./docs/superpowers/plans/2026-05-11-appsumo-deal-pulse-implementation-plan.md)
+- [Visual Redesign Spec](./docs/superpowers/specs/2026-05-12-deal-pulse-visual-redesign.md)
+- [Visual Redesign Plan](./docs/superpowers/plans/2026-05-12-deal-pulse-visual-redesign-plan.md)
+- [Original Design Spec](./docs/superpowers/specs/2026-05-11-appsumo-deal-pulse-design.md)
+- [Original Implementation Plan](./docs/superpowers/plans/2026-05-11-appsumo-deal-pulse-implementation-plan.md)
 - [Completion Notes](./docs/COMPLETION.md)
