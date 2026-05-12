@@ -89,7 +89,22 @@ Event
 
 ---
 
-## 4. Build Order
+## 4. Frontend Design
+
+**Frontend Skill:** Use [frontend-design](https://claude.com/plugins/frontend-design) for all UI work.
+
+The `frontend-design` skill creates distinctive, production-grade interfaces that avoid generic "AI slop" aesthetics. It provides:
+- Bold aesthetic direction and creative vision
+- Typography guidance (distinctive fonts, avoiding Inter/Roboto/Arial)
+- Motion and animation principles
+- Spatial composition (asymmetry, overlap, grid-breaking)
+- Background/texture techniques
+
+**When to invoke:** Before building any UI component, page, or application.
+
+---
+
+## 5. Build Order
 
 | Day | Task |
 |-----|------|
@@ -101,7 +116,7 @@ Event
 
 ---
 
-## 5. Pricing
+## 6. Pricing
 
 | Tier | Price | Limits |
 |------|-------|--------|
@@ -113,7 +128,7 @@ Launch price (first 30 days): 50% off Pro tier.
 
 ---
 
-## 6. Success Criteria
+## 7. Success Criteria
 
 - 5 paying users in first 30 days
 - User can connect a deal and receive an alert within 15 minutes
@@ -122,7 +137,7 @@ Launch price (first 30 days): 50% off Pro tier.
 
 ---
 
-## Notes
+## 8. Notes
 
 - PartnerStack API is free and requires only an API key (no OAuth complexity)
 - AppSumo doesn't have a public API — use RSS + targeted scraping
