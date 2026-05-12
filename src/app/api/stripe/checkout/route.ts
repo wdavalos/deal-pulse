@@ -11,6 +11,8 @@ if (!SESSION_SECRET) {
   throw new Error('SESSION_SECRET environment variable is required')
 }
 
+const sessionSecret: string = SESSION_SECRET
+
 /**
  * Verify a session token and return userId
  */
@@ -20,7 +22,7 @@ function verifySessionToken(token: string): string | null {
     const [userId, signature] = decoded.split(':')
     const payload = userId
     const expectedSignature = crypto
-      .createHmac('sha256', SESSION_SECRET)
+      .createHmac('sha256', sessionSecret)
       .update(payload)
       .digest('hex')
     if (signature === expectedSignature) {
