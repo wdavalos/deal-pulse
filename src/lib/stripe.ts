@@ -15,7 +15,7 @@ export function getStripe(): Stripe {
   return _stripe
 }
 
-export const stripe = { getStripe }
+export const stripe = getStripe()
 
 export const STRIPE_PRICES = {
   free: null,
