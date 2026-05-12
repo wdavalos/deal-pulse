@@ -1,7 +1,7 @@
 # AppSumo Deal Pulse — Implementation Complete
 
 **Date:** 2026-05-11
-**Last Updated:** 2026-05-12
+**Last Updated:** 2026-05-12 (emergency fix: deleted shadowing `app/` directory, lazy-init Resend client, added prisma generate to build)
 **Status:** Live at https://dealpulse.space
 
 ## What Was Built

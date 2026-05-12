@@ -10,10 +10,14 @@
 
 ```bash
 cd /home/thinkpad/Projects/ai-micro-saas-portfolio/appsumo-deal-pulse
+npm install
 npm run dev       # Local development
-npm run build     # Production build
-npm run test      # Run tests
+npm run build     # Production build (includes prisma generate)
+npm run start     # Start production server
+npm test          # Run tests
 ```
+
+**Note:** The app uses `src/app/` for Next.js pages (not a root `app/` directory). Keep the `src/` directory structure intact.
 
 ---
 
@@ -68,7 +72,7 @@ vercel env add STRIPE_AGENCY_PRICE_ID production
 vercel env add STRIPE_WEBHOOK_SECRET production
 vercel env add RESEND_API_KEY production
 vercel env add SESSION_SECRET production
-verenv env add CRON_SECRET production
+vercel env add CRON_SECRET production
 vercel env add NEXT_PUBLIC_APP_URL production
 ```
 
@@ -80,11 +84,11 @@ vercel env add NEXT_PUBLIC_APP_URL production
 # Push schema to database
 npx prisma db push
 
+# Generate Prisma client (required before build)
+npx prisma generate
+
 # Open Prisma Studio
 npx prisma studio
-
-# Generate Prisma client
-npx prisma generate
 ```
 
 ---
@@ -154,14 +158,18 @@ To change frequency, upgrade to Vercel Pro plan.
 
 ## Known Issues
 
-1. **Tailwind CSS not rendering** — The build shows styles but browser may need hard refresh (`Ctrl+Shift+R`). This is a Vercel Edge Cache issue, not code.
-2. **Hobby plan cron limit** — Cron runs daily max. Upgrade to Pro for more frequent checks.
+1. **Tailwind CSS not rendering** — Caused by an empty `app/` directory at the project root shadowing `src/app/`. If styles break again, verify no `app/` directory exists at root level (`ls -la /` in project root).
+2. **Hobby plan cron limit** — Cron runs daily max. Upgrade to Vercel Pro for more frequent checks.
+3. **Resend API key** — `RESEND_API_KEY` must be set in `.env` for the build to succeed. The email client uses lazy initialization to avoid build-time errors.
 
 ---
 
 ## Troubleshooting
 
 ```bash
+# If styles aren't loading, check for shadowing app/ directory
+ls -la /path/to/project/ | grep "^d.*app"
+
 # Rebuild locally
 rm -rf .next && npm run build
 
@@ -170,10 +178,10 @@ vercel ls
 vercel inspect <deployment-url>
 
 # View Vercel logs
-vercel logs deal-pulse
+vercel logs dealpulse.space
 
-# Clear Vercel cache
-# Go to Dashboard → Deployment → ... → Redeploy with cache clear
+# Force a clean production deploy
+vercel deploy --prod --force
 ```
 
 ---

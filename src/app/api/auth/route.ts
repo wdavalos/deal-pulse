@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMagicLink } from '@/lib/auth'
-import { resend } from '@/lib/email'
+import { getResend } from '@/lib/email'
 
 // Simple in-memory rate limiting: track requests by IP
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify?token=${token}`
 
     // Send email via Resend
-    await resend.emails.send({
+    await getResend().emails.send({
       from: 'DealPulse <noreply@dealPulse.io>',
       to: email,
       subject: 'Your DealPulse Login Link',
