@@ -33,19 +33,35 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ backgroundColor: '#0a0a0f' }}
+    >
       <div className="w-full max-w-md">
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Welcome to DealPulse</h1>
-          <p className="text-gray-400 mb-8">Enter your email to receive a login link</p>
+        <div
+          className="rounded-xl p-8"
+          style={{
+            backgroundColor: '#111111',
+            border: '1px solid #222222',
+          }}
+        >
+          <h1
+            className="text-2xl font-bold mb-2"
+            style={{ fontFamily: '"Space Mono", monospace', color: '#ffffff' }}
+          >
+            Welcome to DealPulse
+          </h1>
+          <p className="mb-8" style={{ color: '#888888' }}>
+            Enter your email to receive a login link
+          </p>
 
           {status === 'success' ? (
             <div className="text-center">
               <div className="mb-4">
                 <svg
-                  className="w-16 h-16 text-green-500 mx-auto"
+                  className="w-16 h-16 mx-auto"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#b45309"
                   viewBox="0 0 24 24"
                 >
                   <path
@@ -56,15 +72,21 @@ export default function LoginPage() {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-semibold text-white mb-2">Link sent!</h2>
-              <p className="text-gray-400">
+              <h2 className="text-xl font-semibold mb-2" style={{ color: '#ffffff' }}>
+                Link sent!
+              </h2>
+              <p style={{ color: '#888888' }}>
                 Check your email for a login link. It will expire in 15 minutes.
               </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: '#888888' }}
+                >
                   Email address
                 </label>
                 <input
@@ -73,14 +95,27 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2"
+                  style={{
+                    backgroundColor: '#111111',
+                    border: '1px solid #222222',
+                    color: '#ffffff',
+                    '--tw-ring-color': '#b45309',
+                  }}
                   placeholder="you@example.com"
                   disabled={status === 'loading'}
                 />
               </div>
 
               {status === 'error' && (
-                <div className="bg-red-900/30 border border-red-800 text-red-400 rounded-lg p-3 text-sm">
+                <div
+                  className="rounded-lg p-3 text-sm"
+                  style={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                    color: '#f87171',
+                  }}
+                >
                   {errorMessage}
                 </div>
               )}
@@ -88,7 +123,13 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+                className="w-full px-4 py-3 rounded-lg font-medium transition-colors"
+                style={{
+                  backgroundColor: status === 'loading' ? '#92400e' : '#b45309',
+                  color: 'white',
+                  cursor: status === 'loading' ? 'not-allowed' : 'pointer',
+                  fontFamily: '"Space Mono", monospace',
+                }}
               >
                 {status === 'loading' ? 'Sending...' : 'Send login link'}
               </button>

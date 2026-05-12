@@ -21,7 +21,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased min-h-screen" style={{ backgroundColor: 'var(--earth-bg)' }}>
+      <body className="antialiased min-h-screen" style={{ backgroundColor: '#0a0a0f', color: '#ffffff' }}>
         {children}
       </body>
     </html>
