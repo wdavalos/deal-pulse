@@ -1,7 +1,7 @@
 # AppSumo Deal Pulse — Implementation Complete
 
 **Date:** 2026-05-11
-**Last Updated:** 2026-05-12 (emergency fix: deleted shadowing `app/` directory, lazy-init Resend client, added prisma generate to build)
+**Last Updated:** 2026-05-12 (visual redesign: indie hacker aesthetic, muted earth amber, Space Mono, single-screen landing, Free/Pro pricing only)
 **Status:** Live at https://dealpulse.space
 
 ## What Was Built
@@ -12,7 +12,7 @@ AppSumo Deal Pulse is an alert system that monitors AppSumo deal activity and no
 - **Stack:** Next.js 14 App Router, Prisma + PostgreSQL, TypeScript, Stripe, Resend, Vercel
 - **Database:** Vercel Postgres (Prisma with PostgreSQL)
 - **Auth:** Magic link with rate limiting
-- **Payments:** Stripe subscriptions (Free/Pro/Agency tiers — $49/mo Pro, $99/mo Agency)
+- **Payments:** Stripe subscriptions (Free/Pro tiers — $49/mo Pro only; Agency tier removed from UI)
 - **Monitoring:** RSS parsing + PartnerStack API + Vercel cron (daily on Hobby)
 - **Alerts:** Discord webhooks with comprehensive error handling
 - **Domain:** dealpulse.space (purchased via Vercel)
@@ -103,16 +103,25 @@ SESSION_SECRET="..."                  # Session signing
 5. Set environment variables in Vercel dashboard
 6. Deploy — cron jobs run daily on Hobby plan
 
+## Visual Design
+
+- **Aesthetic:** Indie hacker — warm, hand-crafted, approachable
+- **Palette:** Muted earth amber (`#b45309`) on deep charcoal (`#0a0a0f`)
+- **Typography:** Space Mono (headings/branding), system sans (body)
+- **Layout:** Single-screen focused landing page (hero above fold, no scroll)
+- **Pricing:** Simplified to Free/Pro only (Agency removed until team features exist)
+
 ## Recent Commits
 
 | Hash | Message |
 |------|---------|
-| dd5a972 | fix: stripe.ts export singleton instance not object |
-| 8f04d26 | fix: cron to daily for hobby plan |
-| bc53a64 | fix: switch to postgresql for production |
-| 118f70c | fix: lazy env init, prisma generate in build |
-| a75a928 | docs: add completion documentation |
-| 62bc080 | feat: complete AppSumo Deal Pulse MVP |
+| e9ab264 | fix: remove invalid CSS var from login input style |
+| fa9c0a5 | fix: apply earth palette to login, dashboard, DealCard, EventLog |
+| 1f75b2b | fix: add 'use client' to landing page for event handlers |
+| 4cf87a3 | feat: complete landing page redesign — single-screen indie hacker |
+| 39b0214 | feat: add earth palette and Space Mono to Tailwind config |
+| fa9c0a5 | fix: apply earth palette to login, dashboard, DealCard, EventLog |
+| dcae482 | (reverted commit — .next artifacts accidentally included) |
 
 ## Test Results
 
