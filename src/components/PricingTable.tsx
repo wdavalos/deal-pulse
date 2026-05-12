@@ -28,8 +28,8 @@ const TIERS: TierInfo[] = [
   },
   {
     name: 'Pro',
-    price: 29,
-    description: 'For professionals who need more',
+    price: 49,
+    description: 'For founders running serious AppSumo deals',
     features: [
       'Unlimited AppSumo Deals',
       'Discord + Email alerts',
@@ -37,17 +37,6 @@ const TIERS: TierInfo[] = [
       'Advanced monitoring',
     ],
     highlighted: true,
-  },
-  {
-    name: 'Agency',
-    price: 99,
-    description: 'For agencies managing multiple clients',
-    features: [
-      'Everything in Pro',
-      'Team collaboration (5 seats)',
-      'Client management',
-      'White-label reports',
-    ],
   },
 ]
 
@@ -83,7 +72,7 @@ export function PricingTable({ currentTier, userId }: PricingTableProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
       {TIERS.map((tier) => {
         const isCurrentTier = currentTier === tier.name.toLowerCase()
         const isFreeTier = tier.price === 0
@@ -91,48 +80,91 @@ export function PricingTable({ currentTier, userId }: PricingTableProps) {
         return (
           <div
             key={tier.name}
-            className={`relative rounded-xl border p-6 ${
+            className={`relative rounded-xl p-6 ${
               tier.highlighted
-                ? 'border-blue-500 bg-blue-950/20 shadow-lg shadow-blue-500/10'
-                : 'border-gray-800 bg-gray-900/50'
+                ? 'border-2 shadow-lg'
+                : 'border'
             }`}
+            style={{
+              borderColor: tier.highlighted ? 'var(--earth-primary)' : 'var(--earth-border)',
+              backgroundColor: 'var(--earth-surface)',
+            }}
           >
             {tier.highlighted && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-                  Most Popular
-                </span>
+              <div
+                className="absolute -top-3 left-1/2 -translate-x-1/2"
+                style={{
+                  backgroundColor: 'var(--earth-primary)',
+                  color: 'white',
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                }}
+              >
+                Most Popular
               </div>
             )}
 
             {isCurrentTier && (
-              <div className="absolute top-4 right-4">
-                <span className="bg-green-500/20 text-green-400 text-xs font-medium px-2 py-1 rounded border border-green-500/30">
-                  Current Plan
-                </span>
+              <div
+                className="absolute top-4 right-4"
+                style={{
+                  backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                  color: '#4ade80',
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                }}
+              >
+                Current Plan
               </div>
             )}
 
             <div className="mb-4">
-              <h3 className="text-xl font-bold text-white mb-1">{tier.name}</h3>
-              <p className="text-sm text-gray-400">{tier.description}</p>
+              <h3
+                className="text-xl font-bold mb-1"
+                style={{
+                  fontFamily: '"Space Mono", monospace',
+                  color: 'var(--earth-text)',
+                }}
+              >
+                {tier.name}
+              </h3>
+              <p className="text-sm" style={{ color: 'var(--earth-subtle)' }}>
+                {tier.description}
+              </p>
             </div>
 
             <div className="mb-6">
-              <span className="text-4xl font-bold text-white">${tier.price}</span>
+              <span
+                className="text-4xl font-bold"
+                style={{ color: 'var(--earth-text)', fontFamily: '"Space Mono", monospace' }}
+              >
+                ${tier.price}
+              </span>
               {tier.price > 0 && (
-                <span className="text-gray-400 ml-1">/month</span>
+                <span className="text-sm ml-1" style={{ color: 'var(--earth-muted)' }}>
+                  /month
+                </span>
               )}
             </div>
 
             <ul className="space-y-3 mb-6">
               {tier.features.map((feature, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-gray-300">
+                <li
+                  key={index}
+                  className="flex items-start gap-2 text-sm"
+                  style={{ color: 'var(--earth-subtle)' }}
+                >
                   <svg
-                    className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5"
+                    className="w-5 h-5 flex-shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    style={{ color: 'var(--earth-primary)' }}
                   >
                     <path
                       strokeLinecap="round"
@@ -149,17 +181,25 @@ export function PricingTable({ currentTier, userId }: PricingTableProps) {
             <button
               onClick={() => handleUpgrade(tier.name.toLowerCase())}
               disabled={loading !== null || isCurrentTier || isFreeTier}
-              className={`w-full py-2.5 px-4 rounded-lg font-medium transition-colors ${
-                isCurrentTier
-                  ? 'bg-gray-800 text-gray-400 cursor-not-allowed'
-                  : isFreeTier
-                  ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
-                  : loading === tier.name.toLowerCase()
-                  ? 'bg-blue-600 text-white cursor-wait'
-                  : tier.highlighted
-                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                  : 'bg-gray-700 hover:bg-gray-600 text-white'
-              }`}
+              className="w-full py-2.5 px-4 rounded-lg font-medium transition-colors"
+              style={{
+                backgroundColor:
+                  isCurrentTier || isFreeTier
+                    ? 'var(--earth-border)'
+                    : loading === tier.name.toLowerCase()
+                    ? 'var(--earth-hover)'
+                    : tier.highlighted
+                    ? 'var(--earth-primary)'
+                    : 'var(--earth-surface)',
+                color:
+                  isCurrentTier || isFreeTier
+                    ? 'var(--earth-muted)'
+                    : 'white',
+                cursor:
+                  isCurrentTier || isFreeTier ? 'not-allowed' : 'pointer',
+                fontFamily: '"Space Mono", monospace',
+                border: `1px solid ${tier.highlighted && !isCurrentTier && !isFreeTier ? 'var(--earth-primary)' : 'var(--earth-border)'}`,
+              }}
             >
               {loading === tier.name.toLowerCase()
                 ? 'Loading...'
