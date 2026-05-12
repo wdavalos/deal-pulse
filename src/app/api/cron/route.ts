@@ -38,76 +38,82 @@ export async function GET(request: NextRequest) {
     let processedCount = 0;
 
     for (const deal of activeDeals) {
-      // Find matching AppSumo deal by URL
-      const matchingDeal = currentAppSumoDeals.find(
-        (d) => d.url === deal.appsumoUrl
-      );
-
-      // Check for tier changes if PartnerStack API key exists
-      if (deal.partnerstackApiKey) {
-        const currentPartnerStackDeal: PartnerStackDeal | null = await fetchPartnerStackDeal(
-          deal.partnerstackApiKey,
-          deal.id
+      try {
+        // Find matching AppSumo deal by URL
+        const matchingDeal = currentAppSumoDeals.find(
+          (d) => d.url === deal.appsumoUrl
         );
 
-        if (currentPartnerStackDeal) {
-          // Get the most recent tier_filled event to compare
-          const lastTierEvent = deal.events.find((e) => e.type === 'tier_filled');
-          let previousDeal: PartnerStackDeal | null = null;
+        // Check for tier changes if PartnerStack API key exists
+        if (deal.partnerstackApiKey) {
+          const currentPartnerStackDeal: PartnerStackDeal | null = await fetchPartnerStackDeal(
+            deal.partnerstackApiKey,
+            deal.id
+          );
 
-          if (lastTierEvent) {
-            // Try to reconstruct previous state from the event details
-            // For simplicity, we'll use a basic approach
-            const tierMatch = lastTierEvent.details?.match(/Tier (\d+)/i);
-            if (tierMatch) {
-              previousDeal = {
-                id: deal.id,
-                status: 'active',
-                tierCurrent: parseInt(tierMatch[1], 10),
-                tierMax: currentPartnerStackDeal.tierMax,
-                lastSyncedAt: lastTierEvent.occurredAt,
-              };
+          if (currentPartnerStackDeal) {
+            // Get the most recent tier_filled event to compare
+            const lastTierEvent = deal.events.find((e) => e.type === 'tier_filled');
+            let previousDeal: PartnerStackDeal | null = null;
+
+            if (lastTierEvent) {
+              // Try to reconstruct previous state from the event details
+              // For simplicity, we'll use a basic approach
+              const tierMatch = lastTierEvent.details?.match(/Tier (\d+)/i);
+              if (tierMatch) {
+                previousDeal = {
+                  id: deal.id,
+                  status: 'active',
+                  tierCurrent: parseInt(tierMatch[1], 10),
+                  tierMax: currentPartnerStackDeal.tierMax,
+                  lastSyncedAt: lastTierEvent.occurredAt,
+                };
+              }
+            }
+
+            // Only check for tier change if we successfully extracted a previous tier
+            if (previousDeal !== null && detectTierChange(previousDeal, currentPartnerStackDeal)) {
+              // Create tier_filled event
+              await prisma.event.create({
+                data: {
+                  dealId: deal.id,
+                  type: 'tier_filled',
+                  details: `Tier ${currentPartnerStackDeal.tierCurrent} reached`,
+                  occurredAt: new Date(),
+                },
+              });
             }
           }
+        }
 
-          if (detectTierChange(previousDeal, currentPartnerStackDeal)) {
-            // Create tier_filled event
+        // Check if deal expired
+        if (matchingDeal && matchingDeal.status === 'expired') {
+          // Check if we already have an expired event for this deal
+          const hasExpiredEvent = deal.events.some((e) => e.type === 'expired');
+
+          if (!hasExpiredEvent) {
             await prisma.event.create({
               data: {
                 dealId: deal.id,
-                type: 'tier_filled',
-                details: `Tier ${currentPartnerStackDeal.tierCurrent} reached`,
+                type: 'expired',
+                details: `Deal expired: ${matchingDeal.title}`,
                 occurredAt: new Date(),
               },
             });
           }
         }
+
+        // Update lastChecked timestamp
+        await prisma.deal.update({
+          where: { id: deal.id },
+          data: { lastChecked: new Date() },
+        });
+
+        processedCount++;
+      } catch (error) {
+        console.error(`Error processing deal ${deal.id}:`, error);
+        // Continue processing other deals instead of failing the entire batch
       }
-
-      // Check if deal expired
-      if (matchingDeal && matchingDeal.status === 'expired') {
-        // Check if we already have an expired event for this deal
-        const hasExpiredEvent = deal.events.some((e) => e.type === 'expired');
-
-        if (!hasExpiredEvent) {
-          await prisma.event.create({
-            data: {
-              dealId: deal.id,
-              type: 'expired',
-              details: `Deal expired: ${matchingDeal.title}`,
-              occurredAt: new Date(),
-            },
-          });
-        }
-      }
-
-      // Update lastChecked timestamp
-      await prisma.deal.update({
-        where: { id: deal.id },
-        data: { lastChecked: new Date() },
-      });
-
-      processedCount++;
     }
 
     return NextResponse.json({
